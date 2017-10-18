@@ -22,6 +22,9 @@
  */
 namespace Jcode\Event;
 
+use Jcode\Application;
+use Jcode\DataObject\Collection;
+
 class Manager
 {
 
@@ -29,14 +32,20 @@ class Manager
 
     protected $isSharedInstance = true;
 
-    /**
-     * @inject \Jcode\Application\Config
-     * @var \Jcode\Application\Config
-     */
-    protected $config;
-
-    public function dispatchEvent($eventId, $eventObject)
+    public function dispatchEvent($eventID, $eventObject)
     {
+        $modules = Application::registry('module_collection');
 
+        if ($modules instanceof Collection) {
+            foreach ($modules as $module) {
+                if ($module->getEvents()) {
+                    foreach ($module->getEvents()->getData($eventID) as $target) {
+                        list($class, $method) = explode('::', $target);
+
+                        Application::objectManager()->get($class)->$method($eventObject);
+                    }
+                }
+            }
+        }
     }
 }
