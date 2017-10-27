@@ -39,10 +39,14 @@ class Manager
         if ($modules instanceof Collection) {
             foreach ($modules as $module) {
                 if ($module->getEvents()) {
-                    foreach ($module->getEvents()->getData($eventID) as $target) {
-                        list($class, $method) = explode('::', $target);
+                    foreach ($module->getEvents() as $trigger => $targets) {
+                        if ($trigger == $eventID) {
+                            foreach ($targets as $target) {
+                                list($class, $method) = explode('::', $target);
 
-                        Application::objectManager()->get($class)->$method($eventObject);
+                                Application::objectManager()->get($class)->$method($eventObject);
+                            }
+                        }
                     }
                 }
             }
