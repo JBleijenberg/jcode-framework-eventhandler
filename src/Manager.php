@@ -44,7 +44,7 @@ class Manager
                             foreach ($targets as $target) {
                                 list($class, $method) = explode('::', $target);
 
-                                Application::objectManager()->get($class)->$method($eventObject);
+                                Application::getClass($class)->$method($eventObject);
                             }
                         }
                     }
